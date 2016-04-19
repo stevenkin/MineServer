@@ -60,14 +60,15 @@ public class HttpResponse {
 
             // response body byte, exception throws here
             response.body = FileUtil.getFileContent(file);
-            response.addHeader(CONTENT_LENGTH, response.body.length);
             Date lastModified = new Date(file.lastModified());
             response.addHeader(LAST_MODIFIED,
                     formater.format(lastModified));
         }else{
             response.status(NOT_FOUND_404);
-            response.body = new byte[0];
+            response.body = "http 404 not found".getBytes();
+
         }
+        response.addHeader(CONTENT_LENGTH, response.body.length);
         response.addHeader(CONNECTION, KEEP_ALIVE);
 
         return response;
@@ -75,7 +76,7 @@ public class HttpResponse {
 
     public static HttpResponse buildError500Response(){
         HttpResponse response = new HttpResponse();
-        response.status(SERVER_ERROR_500).body = new byte[0];
+        response.status(SERVER_ERROR_500).addHeader(CONTENT_LENGTH, response.body.length).body = "http 500 error".getBytes();
         return response;
     }
 
