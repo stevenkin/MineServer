@@ -1,29 +1,24 @@
-package me.stevenkin.http.mineserver.core.parser;
+package me.stevenkin.http.mineserver.core.processor;
 
 import me.stevenkin.http.mineserver.core.entry.HttpRequest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created by wjg on 16-4-14.
  */
-public class HttpRequestParser {
+public class HttpParser {
     private static final byte[] END = new byte[] { 13, 10, 13, 10 };
 
     public enum METHOD{
         GET("GET"),POST("POST");
         private String method;
 
-        private METHOD(String method){
+        METHOD(String method){
             this.method = method;
         }
 
@@ -49,13 +44,17 @@ public class HttpRequestParser {
     }
 
     private boolean isParseRequestHeader = false;
+
     private SocketChannel socketChannel;
+
     private byte[] headerBytes = new byte[0];
+    private byte[] bodyBytes = new byte[0];
+
     private METHOD method;
     private String path;
     private String protocol;
 
-    public HttpRequestParser(SocketChannel socketChannel){
+    public HttpParser(SocketChannel socketChannel){
         this.socketChannel = socketChannel;
     }
 

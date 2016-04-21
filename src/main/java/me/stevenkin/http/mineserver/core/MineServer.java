@@ -2,7 +2,7 @@ package me.stevenkin.http.mineserver.core;
 
 import me.stevenkin.http.mineserver.core.entry.HttpRequest;
 import me.stevenkin.http.mineserver.core.entry.HttpResponse;
-import me.stevenkin.http.mineserver.core.parser.HttpRequestParser;
+import me.stevenkin.http.mineserver.core.processor.HttpParser;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -26,7 +26,7 @@ public class MineServer implements Runnable {
     private int port;
     private ServerSocketChannel serverSocketChannel;
     private Selector selector;
-    private Map<SocketChannel,HttpRequestParser> requestParserMap = new HashMap<SocketChannel,HttpRequestParser>();
+    private Map<SocketChannel,HttpParser> requestParserMap = new HashMap<SocketChannel,HttpParser>();
 
     public void init(int port,String basePath){
         this.port = port;
@@ -34,7 +34,7 @@ public class MineServer implements Runnable {
         try {
             serverSocketChannel = ServerSocketChannel.open();
             serverSocketChannel.configureBlocking(false);
-            serverSocketChannel.bind(new InetSocketAddress("127.0.0.1",port));
+            serverSocketChannel.bind(new InetSocketAddress("127.0.0.1",this.port));
             selector = Selector.open();
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
             logger.info("server is boot "+serverSocketChannel.toString());
@@ -103,14 +103,14 @@ public class MineServer implements Runnable {
             key.channel().close();
             return;
         }
-        HttpRequestParser httpRequestParser = requestParserMap.get(socketChannel);
-        if(httpRequestParser==null){
-            httpRequestParser = new HttpRequestParser(socketChannel);
-            requestParserMap.put(socketChannel,httpRequestParser);
+        HttpParser httpParser = requestParserMap.get(socketChannel);
+        if(httpParser ==null){
+            httpParser = new HttpParser(socketChannel);
+            requestParserMap.put(socketChannel, httpParser);
         }
-        if(httpRequestParser.parse(buffer.getReadBuffer(),count)) {
+        if(httpParser.parse(buffer.getReadBuffer(),count)) {
             key.interestOps(SelectionKey.OP_WRITE);
-            HttpRequest request = httpRequestParser.getRequest();
+            HttpRequest request = httpParser.getRequest();
             HttpResponse response;
             try {
                 response = HttpResponse.buildResponse(basePath,request.getPath());
@@ -123,7 +123,7 @@ public class MineServer implements Runnable {
             ByteBuffer writeBuffer = ByteBuffer.allocate(header.length+body.length);
             writeBuffer.put(header).put(body).flip();
             buffer.setWriteBuffer(writeBuffer);
-            httpRequestParser.clear();
+            httpParser.clear();
         }
         buffer.getReadBuffer().clear();
         key.attach(buffer);
