@@ -13,7 +13,7 @@ public class HttpRequest {
     private String path;
     private String protocol;
 
-    private String appcept;
+    private String accept;
     private String acceptCharset;
     private String acceptEncoding;
     private String acceptLanguage;
@@ -28,10 +28,7 @@ public class HttpRequest {
     private byte[] body = new byte[0];
     private Map<String,String> params = new HashMap<String,String>();
 
-    public HttpRequest(HttpParser.METHOD method, String path, String protocol) {
-        this.method = method;
-        this.path = path;
-        this.protocol = protocol;
+    public HttpRequest() {
     }
 
     public void setMethod(String method) {
@@ -46,12 +43,12 @@ public class HttpRequest {
         this.protocol = protocol;
     }
 
-    public String getAppcept() {
-        return appcept;
+    public String getAccept() {
+        return accept;
     }
 
-    public void setAppcept(String appcept) {
-        this.appcept = appcept;
+    public void setAccept(String accept) {
+        this.accept = accept;
     }
 
     public String getAcceptCharset() {

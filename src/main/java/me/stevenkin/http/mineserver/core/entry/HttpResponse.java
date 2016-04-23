@@ -2,7 +2,9 @@ package me.stevenkin.http.mineserver.core.entry;
 
 import me.stevenkin.http.mineserver.core.util.FileUtil;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -11,7 +13,62 @@ import java.util.*;
  * Created by wjg on 16-4-15.
  */
 public class HttpResponse {
-    private static final DateFormat formater = new SimpleDateFormat(
+
+    private String code;
+    private String message;
+    private String protocol;
+
+    private Map<String,String> headers = new HashMap<>();
+
+    private OutputStream output = new ByteArrayOutputStream();
+
+    private HttpRequest request;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    public void addHeader(String name,String value){
+        headers.put(name,value);
+    }
+
+    public OutputStream getOutput() {
+        return output;
+    }
+
+    public HttpRequest getRequest() {
+        return request;
+    }
+
+    public void setRequest(HttpRequest request) {
+        this.request = request;
+    }
+
+    /*private static final DateFormat formater = new SimpleDateFormat(
             "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
 
     public static final String OK_200 = "HTTP/1.1 200 OK";
@@ -91,5 +148,5 @@ public class HttpResponse {
         }
         sb.append(NEWLINE); // empty line;
         return sb.toString();
-    }
+    }*/
 }

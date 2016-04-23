@@ -2,9 +2,11 @@ package me.stevenkin.http.mineserver.core;
 
 import me.stevenkin.http.mineserver.core.entry.HttpRequest;
 import me.stevenkin.http.mineserver.core.entry.HttpResponse;
+import me.stevenkin.http.mineserver.core.entry.ReadWriteBuffer;
 import me.stevenkin.http.mineserver.core.processor.HttpParser;
 import org.apache.log4j.Logger;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -90,7 +92,7 @@ public class MineServer implements Runnable {
         socketChannel.register(selector, SelectionKey.OP_READ);
     }
 
-    private void read(SelectionKey key) throws IOException {
+    /*private void read(SelectionKey key) throws IOException {
         SocketChannel socketChannel = (SocketChannel) key.channel();
         ReadWriteBuffer buffer = (ReadWriteBuffer) key.attachment();
         if(buffer==null){
@@ -127,16 +129,38 @@ public class MineServer implements Runnable {
         }
         buffer.getReadBuffer().clear();
         key.attach(buffer);
+    }*/
+
+    public void read(SelectionKey key){
+        SocketChannel channel = (SocketChannel) key.channel();
+        HttpParser httpParser = requestParserMap.get(channel);
+        if(httpParser==null){
+            httpParser = new HttpParser(key,requestParserMap);
+            requestParserMap.put(channel,httpParser);
+        }
+        if(httpParser.parse()){
+            ReadWriteBuffer buffer = (ReadWriteBuffer) key.attachment();
+            if(buffer==null){
+                buffer = new ReadWriteBuffer();
+                key.attach(buffer);
+            }
+            buffer.setRequestHeaderBytes(httpParser.getRequestHeaderBytes());
+            buffer.setRequestBodyBytes(httpParser.getRequestBodyBytes());
+            HttpRequest request = httpParser.getRequest();
+            HttpResponse response = new HttpResponse();
+            response.setRequest(request);
+
+        }
     }
 
     private void write(SelectionKey key) throws IOException {
-        ReadWriteBuffer buffer = (ReadWriteBuffer) key.attachment();
+        /*ReadWriteBuffer buffer = (ReadWriteBuffer) key.attachment();
         SocketChannel socketChannel = (SocketChannel) key.channel();
         socketChannel.write(buffer.getWriteBuffer());
         if(!buffer.getWriteBuffer().hasRemaining()){
             key.interestOps(SelectionKey.OP_READ);
             buffer.getWriteBuffer().clear();
-        }
+        }*/
     }
 
     public static void main(String[] args){
