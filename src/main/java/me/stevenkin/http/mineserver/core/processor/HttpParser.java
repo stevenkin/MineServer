@@ -88,13 +88,18 @@ public class HttpParser {
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 outputStream.write(this.bodyBytes);
                 outputStream.write(bytes);
-                this.bodyBytes = outputStream.toByteArray();
+                byte[] byteArray = outputStream.toByteArray();
                 long length = this.getRequest().getContentLength();
-                if(this.bodyBytes.length>=(int)length){
+                if(byteArray.length>=length){
                     byte[] bytes1 = new byte[(int)length];
-                    System.arraycopy(this.bodyBytes,0,bytes1,0,(int)length);
+                    System.arraycopy(byteArray,0,bytes1,0,(int)length);
                     this.bodyBytes = bytes1;
                     this.request.setBody(this.bodyBytes);
+                    /*if(byteArray.length-length>0){// TODO http pending
+                        byte[] bytes2 = new byte[(int)(byteArray.length-length)];
+                        System.arraycopy(byteArray,(int)length,bytes2,0,bytes2.length);
+                        this.headerBytes = bytes2;
+                    }*/
                     return true;
                 }
             }
@@ -199,8 +204,14 @@ public class HttpParser {
     }
 
     public void clear(){
-        this.isParseRequestHeader = false;
-        this.headerBytes = new byte[0];
+        isParseRequestHeader = false;
+        isGet = true;
+        isHttp11 = true;
+        isKeepAlive = true;
+
+        headerBytes = new byte[0];//TODO http pending
+        bodyBytes = new byte[0];
+        request = null;
     }
 
     private int findIndex(byte[] source, byte[] bytes){
