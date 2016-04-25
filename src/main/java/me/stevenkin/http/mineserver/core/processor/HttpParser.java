@@ -81,26 +81,27 @@ public class HttpParser {
                 map.remove(key.channel());
                 return false;
             }
-            if(this.isGet){
-                if(bytes.length>0)
+            if(bytes.length>0) {
+                if (this.isGet) {
                     throw new ProtocolSyntaxException("http protocol parse syntax error!");
-            }else{
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                outputStream.write(this.bodyBytes);
-                outputStream.write(bytes);
-                byte[] byteArray = outputStream.toByteArray();
-                long length = this.getRequest().getContentLength();
-                if(byteArray.length>=length){
-                    byte[] bytes1 = new byte[(int)length];
-                    System.arraycopy(byteArray,0,bytes1,0,(int)length);
-                    this.bodyBytes = bytes1;
-                    this.request.setBody(this.bodyBytes);
-                    /*if(byteArray.length-length>0){// TODO http pending
+                } else {
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    outputStream.write(this.bodyBytes);
+                    outputStream.write(bytes);
+                    byte[] byteArray = outputStream.toByteArray();
+                    long length = this.getRequest().getContentLength();
+                    if (byteArray.length >= length) {
+                        byte[] bytes1 = new byte[(int) length];
+                        System.arraycopy(byteArray, 0, bytes1, 0, (int) length);
+                        this.bodyBytes = bytes1;
+                        this.request.setBody(this.bodyBytes);
+                    /*if(byteArray.length-length>0){// TODO http pipeline
                         byte[] bytes2 = new byte[(int)(byteArray.length-length)];
                         System.arraycopy(byteArray,(int)length,bytes2,0,bytes2.length);
                         this.headerBytes = bytes2;
                     }*/
-                    return true;
+                        return true;
+                    }
                 }
             }
         }
@@ -204,14 +205,14 @@ public class HttpParser {
     }
 
     public void clear(){
-        isParseRequestHeader = false;
-        isGet = true;
-        isHttp11 = true;
-        isKeepAlive = true;
+        this.isParseRequestHeader = false;
+        this.isGet = true;
+        this.isHttp11 = true;
+        this.isKeepAlive = true;
 
-        headerBytes = new byte[0];//TODO http pending
-        bodyBytes = new byte[0];
-        request = null;
+        this.headerBytes = new byte[0];//TODO http pipeline
+        this.bodyBytes = new byte[0];
+        this.request = null;
     }
 
     private int findIndex(byte[] source, byte[] bytes){
@@ -259,5 +260,13 @@ public class HttpParser {
             }
             return method1;
         }
+    }
+
+    public byte[] getHeaderBytes() {
+        return headerBytes;
+    }
+
+    public byte[] getBodyBytes() {
+        return bodyBytes;
     }
 }

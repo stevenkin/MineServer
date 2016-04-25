@@ -2,11 +2,10 @@ package me.stevenkin.http.mineserver.core;
 
 import me.stevenkin.http.mineserver.core.entry.HttpRequest;
 import me.stevenkin.http.mineserver.core.entry.HttpResponse;
-import me.stevenkin.http.mineserver.core.entry.ReadWriteBuffer;
 import me.stevenkin.http.mineserver.core.processor.HttpParser;
+import me.stevenkin.http.mineserver.core.task.HttpExchange;
 import org.apache.log4j.Logger;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -92,45 +91,6 @@ public class MineServer implements Runnable {
         socketChannel.register(selector, SelectionKey.OP_READ);
     }
 
-    /*private void read(SelectionKey key) throws IOException {
-        SocketChannel socketChannel = (SocketChannel) key.channel();
-        ReadWriteBuffer buffer = (ReadWriteBuffer) key.attachment();
-        if(buffer==null){
-            buffer = new ReadWriteBuffer();
-            key.attach(buffer);
-        }
-        int count = socketChannel.read(buffer.getReadBuffer());
-        if(count<0){
-            key.cancel();
-            key.channel().close();
-            return;
-        }
-        HttpParser httpParser = requestParserMap.get(socketChannel);
-        if(httpParser ==null){
-            httpParser = new HttpParser(socketChannel);
-            requestParserMap.put(socketChannel, httpParser);
-        }
-        if(httpParser.parse(buffer.getReadBuffer(),count)) {
-            key.interestOps(SelectionKey.OP_WRITE);
-            HttpRequest request = httpParser.getRequest();
-            HttpResponse response;
-            try {
-                response = HttpResponse.buildResponse(basePath,request.getPath());
-            } catch (Exception e) {
-                logger.error("server has a error",e);
-                response = HttpResponse.buildError500Response();
-            }
-            byte[] header = response.getHeader();
-            byte[] body = response.getBody();
-            ByteBuffer writeBuffer = ByteBuffer.allocate(header.length+body.length);
-            writeBuffer.put(header).put(body).flip();
-            buffer.setWriteBuffer(writeBuffer);
-            httpParser.clear();
-        }
-        buffer.getReadBuffer().clear();
-        key.attach(buffer);
-    }*/
-
     public void read(SelectionKey key){
         SocketChannel channel = (SocketChannel) key.channel();
         HttpParser httpParser = requestParserMap.get(channel);
@@ -138,29 +98,45 @@ public class MineServer implements Runnable {
             httpParser = new HttpParser(key,requestParserMap);
             requestParserMap.put(channel,httpParser);
         }
-        if(httpParser.parse()){
-            ReadWriteBuffer buffer = (ReadWriteBuffer) key.attachment();
-            if(buffer==null){
-                buffer = new ReadWriteBuffer();
-                key.attach(buffer);
+        HttpResponse response = null;
+        try {
+            if(httpParser.parse()){
+                httpParser.clear();
+                HttpRequest request = httpParser.getRequest();
+                response = new HttpResponse();
+                response.setRequest(request);
+                HttpExchange httpExchange = new HttpExchange(request,response,key);
             }
-            buffer.setRequestHeaderBytes(httpParser.getRequestHeaderBytes());
-            buffer.setRequestBodyBytes(httpParser.getRequestBodyBytes());
-            HttpRequest request = httpParser.getRequest();
-            HttpResponse response = new HttpResponse();
-            response.setRequest(request);
-
+        } catch (Exception e) {
+            httpParser.clear();
+            response = new HttpResponse();
+            response.setCode("400");
+            response.setProtocol("HTTP/1.1");
+            response.setMessage("request syntax error");
+            try {
+                response.getOutput().write(new byte[0]);//TODO http error html
+                byte[] headerBytes = response.headersToBytes();
+                byte[] bodyBytes = response.getOutput().toByteArray();
+                ByteBuffer responseBuffer = ByteBuffer.allocate(headerBytes.length+bodyBytes.length);
+                responseBuffer.put(headerBytes).put(bodyBytes);
+                responseBuffer.flip();
+                key.attach(responseBuffer);
+                key.interestOps(SelectionKey.OP_WRITE);
+                selector.wakeup();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
     }
 
     private void write(SelectionKey key) throws IOException {
-        /*ReadWriteBuffer buffer = (ReadWriteBuffer) key.attachment();
+        ByteBuffer buffer = (ByteBuffer) key.attachment();
         SocketChannel socketChannel = (SocketChannel) key.channel();
-        socketChannel.write(buffer.getWriteBuffer());
-        if(!buffer.getWriteBuffer().hasRemaining()){
+        socketChannel.write(buffer);
+        if(!buffer.hasRemaining()){
             key.interestOps(SelectionKey.OP_READ);
-            buffer.getWriteBuffer().clear();
-        }*/
+            buffer.clear();
+        }
     }
 
     public static void main(String[] args){

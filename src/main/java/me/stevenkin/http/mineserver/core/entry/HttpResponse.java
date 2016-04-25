@@ -2,9 +2,8 @@ package me.stevenkin.http.mineserver.core.entry;
 
 import me.stevenkin.http.mineserver.core.util.FileUtil;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -18,9 +17,9 @@ public class HttpResponse {
     private String message;
     private String protocol;
 
-    private Map<String,String> headers = new HashMap<>();
+    private List<Header> headers = new LinkedList<>();
 
-    private OutputStream output = new ByteArrayOutputStream();
+    private ByteArrayOutputStream output = new ByteArrayOutputStream();
 
     private HttpRequest request;
 
@@ -48,16 +47,21 @@ public class HttpResponse {
         this.protocol = protocol;
     }
 
-    public Map<String, String> getHeaders() {
+    public List<Header> getHeaders() {
         return headers;
     }
 
     public void addHeader(String name,String value){
-        headers.put(name,value);
+        headers.add(new Header(name,value));
     }
 
-    public OutputStream getOutput() {
+    public ByteArrayOutputStream getOutput() {
         return output;
+    }
+
+    public BufferedWriter getWrite(char[] chars){
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(this.getOutput()));
+        return writer;
     }
 
     public HttpRequest getRequest() {
@@ -66,6 +70,16 @@ public class HttpResponse {
 
     public void setRequest(HttpRequest request) {
         this.request = request;
+    }
+
+    public byte[] headersToBytes(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(this.protocol).append(" ").append(this.code).append(this.message).append("\r\n");
+        for(Header header:this.headers){
+            stringBuilder.append(header.getName()).append(": ").append(header.getValue()).append("\r\n");
+        }
+        stringBuilder.append("\r\n");
+        return stringBuilder.toString().getBytes(Charset.forName("ISO-8859-1"));
     }
 
     /*private static final DateFormat formater = new SimpleDateFormat(
