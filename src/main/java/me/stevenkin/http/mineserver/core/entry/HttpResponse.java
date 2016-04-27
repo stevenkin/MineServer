@@ -1,5 +1,6 @@
 package me.stevenkin.http.mineserver.core.entry;
 
+import me.stevenkin.http.mineserver.core.container.HttpContext;
 import me.stevenkin.http.mineserver.core.util.FileUtil;
 
 import java.io.*;
@@ -22,6 +23,12 @@ public class HttpResponse {
     private ByteArrayOutputStream output = new ByteArrayOutputStream();
 
     private HttpRequest request;
+
+    private HttpContext context;
+
+    public HttpResponse(HttpContext context) {
+        this.context = context;
+    }
 
     public String getCode() {
         return code;
@@ -55,6 +62,10 @@ public class HttpResponse {
         headers.add(new Header(name,value));
     }
 
+    public void addHeader(Header header){
+        this.headers.add(header);
+    }
+
     public ByteArrayOutputStream getOutput() {
         return output;
     }
@@ -83,8 +94,27 @@ public class HttpResponse {
         return stringBuilder.toString().getBytes(Charset.forName("ISO-8859-1"));
     }
 
-    public void addCookie(Cookie cookie){
+    public void addSetCookie(Cookie cookie){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(cookie.getName()).append("=")
+                .append(cookie.getValue())
+                .append("; ");
+        if(cookie.getDomain()!=null&&!cookie.getDomain().trim().equalsIgnoreCase("")){
+            stringBuilder.append("Domain=").append(cookie.getDomain()).append("; ");
+        }
+        stringBuilder.append("Max-Age=").append(cookie.getMaxAge()).append("; ");
+        if(cookie.getPath()!=null&&!cookie.getPath().trim().equalsIgnoreCase("")){
+            stringBuilder.append("Path=").append(cookie.getPath()).append("; ");
+        }
+        if(cookie.isSecure()){
+            stringBuilder.append("Secure");
+        }
+        Header header = new Header("Set-Cookie",stringBuilder.toString());
+        this.addHeader(header);
+    }
 
+    public HttpContext getContext() {
+        return context;
     }
 
     /*private static final DateFormat formater = new SimpleDateFormat(

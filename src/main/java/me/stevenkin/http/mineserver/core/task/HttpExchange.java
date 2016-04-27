@@ -1,6 +1,7 @@
 package me.stevenkin.http.mineserver.core.task;
 
 import me.stevenkin.http.mineserver.core.container.HttpContainer;
+import me.stevenkin.http.mineserver.core.container.HttpContext;
 import me.stevenkin.http.mineserver.core.entry.HttpRequest;
 import me.stevenkin.http.mineserver.core.entry.HttpResponse;
 import me.stevenkin.http.mineserver.core.exception.NoFoundException;
@@ -39,6 +40,8 @@ public class HttpExchange implements Runnable {
         this.key = key;
         this.container = container;
         this.selector = selector;
+        HttpContext context = new HttpContext(request,response);
+        this.request.setContext(context);
     }
 
     public HttpRequest getRequest() {

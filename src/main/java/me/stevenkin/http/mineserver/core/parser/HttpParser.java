@@ -142,13 +142,13 @@ public class HttpParser {
                 request.setPath(request.getPath().substring(index1));
             }
         }
-            request.setPath(request.getPath().substring(7));
+        request.setPath(request.getPath().substring(7));
         request.setProtocol(lines[2].trim());
         for(int i=1;i<headers.length;i++){
             String[] headerPair = headers[i].split(":");
             String name = headerPair[0].trim().toLowerCase();
             String value = headerPair[1].trim();
-            request.setHeaders(new Header(name,value));
+            request.addHeader(new Header(name,value));
             switch(name){
                 case "accept":
                     request.setAccept(value);
@@ -172,6 +172,10 @@ public class HttpParser {
                         String[] cookiePair = cookieStr.split("=");
                         String cookieName = cookiePair[0].trim();
                         String cookieValue = cookiePair[1].trim();
+                        if("jsessionid".equalsIgnoreCase(cookieName)) {
+                            request.setFirstGetSession(false);
+                            request.setSessionId(cookieValue);
+                        }
                         request.addCookies(new Cookie(cookieName,cookieValue));
                     }
                     break;

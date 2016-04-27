@@ -1,5 +1,6 @@
 package me.stevenkin.http.mineserver.core.entry;
 
+import me.stevenkin.http.mineserver.core.container.HttpContext;
 import me.stevenkin.http.mineserver.core.parser.HttpParser;
 
 import java.io.UnsupportedEncodingException;
@@ -24,12 +25,18 @@ public class HttpRequest {
     private String contentType;
     private Date date;
     private String host;
+    private String sessionId;
 
     private List<Header> headers = new LinkedList<Header>();
     private byte[] body = new byte[0];
     private Map<String,String> params = new HashMap<String,String>();
 
+    private HttpSession session;
+
     private boolean isParseParams = false;
+    private boolean isFirstGetSession = true;
+
+    private HttpContext context;
 
     public HttpRequest() {
     }
@@ -126,11 +133,19 @@ public class HttpRequest {
         this.host = host;
     }
 
+    public boolean isFirstGetSession() {
+        return isFirstGetSession;
+    }
+
+    public void setFirstGetSession(boolean firstGetSession) {
+        isFirstGetSession = firstGetSession;
+    }
+
     public List<Header> getHeaders() {
         return headers;
     }
 
-    public void setHeaders(Header header) {
+    public void addHeader(Header header) {
         this.headers.add(header);
     }
 
@@ -160,6 +175,39 @@ public class HttpRequest {
             this.isParseParams = true;
         }
         return params;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public void setContext(HttpContext context) {
+        this.context = context;
+    }
+
+    public HttpSession getSession(boolean bool){
+        if(this.session!=null)
+            return this.session;
+        this.session = null;
+        if(bool) {
+            if (isFirstGetSession) {
+                this.session = this.context.getSessionManager().initSession();
+                this.sessionId = session.getSessionId();
+                Cookie cookie = this.session.getCookie(this.host,3600,this.path,false);
+                this.context.getResponse().addSetCookie(cookie);
+            } else {
+                this.session = this.context.getSessionManager().getSession(this.sessionId);
+            }
+        }else{
+            if(!isFirstGetSession){
+                this.session = this.context.getSessionManager().getSession(this.sessionId);
+            }
+        }
+        return this.session;
+    }
+
+    public HttpContext getContext() {
+        return context;
     }
 
     private void parseParams(){
