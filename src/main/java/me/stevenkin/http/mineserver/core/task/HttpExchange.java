@@ -3,15 +3,26 @@ package me.stevenkin.http.mineserver.core.task;
 import me.stevenkin.http.mineserver.core.container.HttpContainer;
 import me.stevenkin.http.mineserver.core.entry.HttpRequest;
 import me.stevenkin.http.mineserver.core.entry.HttpResponse;
+import me.stevenkin.http.mineserver.core.exception.NoFoundException;
+import me.stevenkin.http.mineserver.core.util.ErrorMessageUtil;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by wjg on 16-4-23.
  */
 public class HttpExchange implements Runnable {
+    private static final DateFormat formater = new SimpleDateFormat(
+            "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+
     private HttpRequest request;
     private HttpResponse response;
     private SelectionKey key;
@@ -72,17 +83,30 @@ public class HttpExchange implements Runnable {
 
     @Override
     public void run() {
-        byte[] headerBytes = null;
-        byte[] bodyBytes = null;
         try {
             container.doProcess(request,response);
-            headerBytes = response.headersToBytes();
-            bodyBytes = response.getOutput().toByteArray();
+            response.setCode("200");
+            response.setMessage("OK");
         } catch (Exception e) {
             e.printStackTrace();
-            headerBytes = null;//TODO
-            bodyBytes = null;
+            try {
+                if(e instanceof NoFoundException) {
+                    response.setCode("404");
+                    response.setMessage("Not Found");
+                    response.getOutput().write(ErrorMessageUtil.ERROR_404.getBytes(Charset.forName("ISO-8859-1")));
+                }
+                else {
+                    response.setCode("500");
+                    response.setMessage("Internal Server Error");
+                    response.getOutput().write(ErrorMessageUtil.ERROR_500.getBytes(Charset.forName("ISO-8859-1")));
+                }
+            } catch (IOException e1) {
+            }
         }
+        response.addHeader("Date",formater.format(new Date()));
+        byte[] bodyBytes = response.getOutput().toByteArray();
+        response.addHeader("Content-Length",Integer.toString(bodyBytes.length));
+        byte[] headerBytes = response.headersToBytes();
         ByteBuffer responseBuffer = ByteBuffer.allocate(headerBytes.length+bodyBytes.length);
         responseBuffer.put(headerBytes).put(bodyBytes);
         responseBuffer.flip();

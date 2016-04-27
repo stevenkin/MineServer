@@ -1,4 +1,4 @@
-package me.stevenkin.http.mineserver.core.processor;
+package me.stevenkin.http.mineserver.core.parser;
 
 import me.stevenkin.http.mineserver.core.entry.Cookie;
 import me.stevenkin.http.mineserver.core.entry.Header;
@@ -12,9 +12,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
@@ -136,6 +134,15 @@ public class HttpParser {
         String[] lines = headers[0].split("\\s+");
         request.setMethod(lines[0].trim());
         request.setPath(lines[1].trim());
+        if(request.getPath().startsWith("http://")){
+            int index1 = request.getPath().indexOf("/",7);
+            if(index1<0)
+                request.setPath("/");
+            else{
+                request.setPath(request.getPath().substring(index1));
+            }
+        }
+            request.setPath(request.getPath().substring(7));
         request.setProtocol(lines[2].trim());
         for(int i=1;i<headers.length;i++){
             String[] headerPair = headers[i].split(":");

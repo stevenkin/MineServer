@@ -1,8 +1,9 @@
 package me.stevenkin.http.mineserver.core.entry;
 
-import me.stevenkin.http.mineserver.core.processor.HttpParser;
+import me.stevenkin.http.mineserver.core.parser.HttpParser;
 
-import java.net.HttpCookie;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.*;
 
 /**
@@ -27,6 +28,8 @@ public class HttpRequest {
     private List<Header> headers = new LinkedList<Header>();
     private byte[] body = new byte[0];
     private Map<String,String> params = new HashMap<String,String>();
+
+    private boolean isParseParams = false;
 
     public HttpRequest() {
     }
@@ -152,10 +155,51 @@ public class HttpRequest {
     }
 
     public Map<String, String> getParams() {
+        if(!this.isParseParams){
+            this.parseParams();;
+            this.isParseParams = true;
+        }
         return params;
     }
 
-    public void setParam(String name,String value){
-        this.params.put(name,value);
+    private void parseParams(){
+        switch(method){
+            case GET:
+                int index = this.getPath().indexOf("?");
+                int index1 = this.getPath().indexOf("#");
+                if(index<0)
+                    return ;
+                else{
+                    String queryStr = this.getPath().substring(index+1,index1<0?this.getPath().length():index1);
+                    if(queryStr.length()>0){
+                        try {
+                            queryStr = URLDecoder.decode(queryStr,"UTF-8");
+                            String[] paramPairs = queryStr.split("&");
+                            for(String paramPair:paramPairs){
+                                String[] pair = paramPair.split("=");
+                                this.params.put(pair[0].trim(),pair[1].trim());
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
+            case POST:
+                if("application/x-www-form-urlencoded".equalsIgnoreCase(this.getContentType())&&this.getContentLength()>0){
+                    try {
+                        String queryStr = new String(this.getBody(),"ISO-8859-1");
+                        queryStr = URLDecoder.decode(queryStr,"UTF-8");
+                        String[] paramPairs = queryStr.split("&");
+                        for(String paramPair:paramPairs){
+                            String[] pair = paramPair.split("=");
+                            this.params.put(pair[0].trim(),pair[1].trim());
+                        }
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+        }
     }
 }

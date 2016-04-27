@@ -69,6 +69,7 @@ public class HttpResponse {
     }
 
     public void setRequest(HttpRequest request) {
+        this.protocol = "HTTP/1.1";
         this.request = request;
     }
 
@@ -80,6 +81,10 @@ public class HttpResponse {
         }
         stringBuilder.append("\r\n");
         return stringBuilder.toString().getBytes(Charset.forName("ISO-8859-1"));
+    }
+
+    public void addCookie(Cookie cookie){
+
     }
 
     /*private static final DateFormat formater = new SimpleDateFormat(
