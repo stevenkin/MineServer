@@ -134,6 +134,7 @@ public class HttpParser {
         String[] lines = headers[0].split("\\s+");
         request.setMethod(lines[0].trim());
         request.setPath(lines[1].trim());
+        request.setProtocol(lines[2].trim());
         if(request.getPath().startsWith("http://")){
             int index1 = request.getPath().indexOf("/",7);
             if(index1<0)
@@ -142,8 +143,6 @@ public class HttpParser {
                 request.setPath(request.getPath().substring(index1));
             }
         }
-        request.setPath(request.getPath().substring(7));
-        request.setProtocol(lines[2].trim());
         for(int i=1;i<headers.length;i++){
             String[] headerPair = headers[i].split(":");
             String name = headerPair[0].trim().toLowerCase();
@@ -194,7 +193,7 @@ public class HttpParser {
             }
         }
         if(METHOD.GET==request.getMethod()){
-            this.isGet = false;
+            this.isGet = true;
         }else{
             this.isGet = false;
         }

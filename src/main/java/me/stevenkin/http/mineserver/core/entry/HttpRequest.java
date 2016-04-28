@@ -6,6 +6,7 @@ import me.stevenkin.http.mineserver.core.parser.HttpParser;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by wjg on 16-4-15.
@@ -37,6 +38,8 @@ public class HttpRequest {
     private boolean isFirstGetSession = true;
 
     private HttpContext context;
+
+    private Map<String,Object> attributes = new HashMap<>();
 
     public HttpRequest() {
     }
@@ -208,6 +211,18 @@ public class HttpRequest {
 
     public HttpContext getContext() {
         return context;
+    }
+
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+    public Object getAttribute(String key){
+        return this.attributes.get(key);
+    }
+
+    public void addAttributes(String key,Object value){
+        this.attributes.put(key,value);
     }
 
     private void parseParams(){

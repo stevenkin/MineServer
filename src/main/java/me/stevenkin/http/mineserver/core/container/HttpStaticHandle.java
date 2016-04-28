@@ -1,6 +1,8 @@
 package me.stevenkin.http.mineserver.core.container;
 
 import java.io.File;
+import java.util.List;
+
 import me.stevenkin.http.mineserver.core.entry.HttpRequest;
 import me.stevenkin.http.mineserver.core.entry.HttpResponse;
 import me.stevenkin.http.mineserver.core.exception.NoFoundException;
@@ -15,19 +17,10 @@ public class HttpStaticHandle extends AbstractHandle {
 
     @Override
     public void service(HttpRequest request, HttpResponse response) throws Exception {
-        String path = request.getPath();
+        String path = ((List<String>)request.getAttribute("matcherStrList")).get(0);
         String file;
         int index = path.indexOf("?");
-        if(path.startsWith("http://")){
-            int index1 = path.indexOf("/",7);
-            if(index1<0)
-                file = "/";
-            else{
-                file = path.substring(index1,index<0?path.length():index);
-            }
-        }else{
-            file = path.substring(0,index<0?path.length():index);
-        }
+        file = path.substring(0,index<0?path.length():index);
         String filePath = basePath+file;
         File f = new File(filePath);
         if(!f.exists()){
