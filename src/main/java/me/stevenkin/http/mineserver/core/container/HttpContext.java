@@ -9,11 +9,12 @@ import me.stevenkin.http.mineserver.core.entry.HttpResponse;
 public class HttpContext {
     private HttpRequest request;
     private HttpResponse response;
-    private HttpSessionManager sessionManager = new HttpSessionManager();
+    private HttpSessionManager sessionManager;
 
-    public HttpContext(HttpRequest request, HttpResponse response) {
+    public HttpContext(HttpRequest request, HttpResponse response,HttpSessionManager sessionManager) {
         this.request = request;
         this.response = response;
+        this.sessionManager = sessionManager;
     }
 
     public HttpRequest getRequest() {

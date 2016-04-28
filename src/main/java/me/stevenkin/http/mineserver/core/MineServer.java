@@ -5,6 +5,7 @@ import me.stevenkin.http.mineserver.core.entry.HttpRequest;
 import me.stevenkin.http.mineserver.core.entry.HttpResponse;
 import me.stevenkin.http.mineserver.core.parser.HttpParser;
 import me.stevenkin.http.mineserver.core.task.HttpExchange;
+import me.stevenkin.http.mineserver.core.util.ConfigUtil;
 import me.stevenkin.http.mineserver.core.util.ErrorMessageUtil;
 import org.apache.log4j.Logger;
 
@@ -28,8 +29,9 @@ import java.util.concurrent.Executors;
 public class MineServer implements Runnable {
     private static Logger logger = Logger.getLogger(MineServer.class);
 
-    private String basePath;
     private int port;
+    private int coreThreadCount;
+    private String serverName;
     private ServerSocketChannel serverSocketChannel;
     private Selector selector;
     private Map<SocketChannel,HttpParser> requestParserMap = new HashMap<SocketChannel,HttpParser>();
@@ -37,16 +39,18 @@ public class MineServer implements Runnable {
     private ExecutorService service;
     private HttpContainer container;
 
-    public void init(int port,String basePath){
-        this.port = port;
-        this.basePath = basePath;
+    public void init(){
+        ConfigUtil.loadConfig();
+        this.port = Integer.parseInt(ConfigUtil.getConfig("port","8080"));
+        this.coreThreadCount = Integer.parseInt(ConfigUtil.getConfig("coreThreadCount","10"));
+        this.serverName = ConfigUtil.getConfig("server","MineServer");
         try {
             serverSocketChannel = ServerSocketChannel.open();
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.bind(new InetSocketAddress("127.0.0.1",this.port));
             selector = Selector.open();
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-            service = Executors.newFixedThreadPool(10);
+            service = Executors.newFixedThreadPool(this.coreThreadCount);
             container = new HttpContainer();
             logger.info("server is boot "+serverSocketChannel.toString());
         } catch (IOException e) {
@@ -108,19 +112,17 @@ public class MineServer implements Runnable {
             httpParser = new HttpParser(key,requestParserMap);
             requestParserMap.put(channel,httpParser);
         }
-        HttpResponse response = null;
+        HttpResponse response = new HttpResponse();
+        response.addHeader("Server",this.serverName);
         try {
             if(httpParser.parse()){
                 HttpRequest request = httpParser.getRequest();
-                response = new HttpResponse();
-                response.setRequest(request);
                 HttpExchange httpExchange = new HttpExchange(request,response,key,this.container,this.selector);
                 service.submit(httpExchange);
                 httpParser.clear();
             }
         } catch (Exception e) {
             httpParser.clear();
-            response = new HttpResponse();
             response.setCode("400");
             response.setProtocol("HTTP/1.1");
             response.setMessage("request syntax error");
@@ -151,20 +153,6 @@ public class MineServer implements Runnable {
             key.interestOps(SelectionKey.OP_READ);
             buffer.clear();
         }
-    }
-
-    public static void main(String[] args){
-        MineServer server = new MineServer();
-        int port = 8080;
-        String basePath = "/home/wjg/server";
-        if(args.length>0){
-            port = Integer.parseInt(args[0]);
-        }
-        if(args.length>1){
-            basePath = args[1];
-        }
-        server.init(port,basePath);
-        new Thread(server).start();
     }
 
 

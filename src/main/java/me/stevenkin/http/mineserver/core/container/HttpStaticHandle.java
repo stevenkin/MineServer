@@ -4,13 +4,14 @@ import java.io.File;
 import me.stevenkin.http.mineserver.core.entry.HttpRequest;
 import me.stevenkin.http.mineserver.core.entry.HttpResponse;
 import me.stevenkin.http.mineserver.core.exception.NoFoundException;
+import me.stevenkin.http.mineserver.core.util.ConfigUtil;
 import me.stevenkin.http.mineserver.core.util.FileUtil;
 
 /**
  * Created by wjg on 16-4-26.
  */
 public class HttpStaticHandle extends AbstractHandle {
-    private String basePath;
+    private String basePath = ConfigUtil.getConfig("basePath","/home/wjg/server");
 
     @Override
     public void service(HttpRequest request, HttpResponse response) throws Exception {

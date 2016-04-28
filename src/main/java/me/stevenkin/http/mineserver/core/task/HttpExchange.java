@@ -22,7 +22,7 @@ import java.util.Locale;
  */
 public class HttpExchange implements Runnable {
     private static final DateFormat formater = new SimpleDateFormat(
-            "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+            "EEE, dd MMM yyyy HH:mm:ss z", Locale.CHINA);
 
     private HttpRequest request;
     private HttpResponse response;
@@ -40,8 +40,6 @@ public class HttpExchange implements Runnable {
         this.key = key;
         this.container = container;
         this.selector = selector;
-        HttpContext context = new HttpContext(request,response);
-        this.request.setContext(context);
     }
 
     public HttpRequest getRequest() {

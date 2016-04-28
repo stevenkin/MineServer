@@ -26,8 +26,7 @@ public class HttpResponse {
 
     private HttpContext context;
 
-    public HttpResponse(HttpContext context) {
-        this.context = context;
+    public HttpResponse() {
     }
 
     public String getCode() {
@@ -115,6 +114,10 @@ public class HttpResponse {
 
     public HttpContext getContext() {
         return context;
+    }
+
+    public void setContext(HttpContext context) {
+        this.context = context;
     }
 
     /*private static final DateFormat formater = new SimpleDateFormat(

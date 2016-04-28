@@ -19,7 +19,7 @@ public class MappingHandle {
     }
 
     public void init(){
-        handleMap.put("/static/.+",new HttpStaticHandle());
+        handleMap.put("^/static/.+",new HttpStaticHandle());
     }
 
     public HttpHandle getHander(HttpRequest request){
