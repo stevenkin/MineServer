@@ -46,4 +46,23 @@ public class MappingInfo {
     public void addInitParameter(String key,String value){
         this.initParameter.put(key,value);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MappingInfo that = (MappingInfo) o;
+
+        if (method != that.method) return false;
+        return urlPatten.equals(that.urlPatten);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = method.hashCode();
+        result = 31 * result + urlPatten.hashCode();
+        return result;
+    }
 }
