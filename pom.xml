@@ -74,7 +74,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>me.stevenkin.http.mineserver.core.MineServer</mainClass>
+                            <mainClass>me.stevenkin.http.mineserver.core.task.MineServer</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

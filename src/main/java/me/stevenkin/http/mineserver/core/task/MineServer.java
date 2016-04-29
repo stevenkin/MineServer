@@ -1,10 +1,9 @@
-package me.stevenkin.http.mineserver.core;
+package me.stevenkin.http.mineserver.core.task;
 
 import me.stevenkin.http.mineserver.core.container.HttpContainer;
 import me.stevenkin.http.mineserver.core.entry.HttpRequest;
 import me.stevenkin.http.mineserver.core.entry.HttpResponse;
 import me.stevenkin.http.mineserver.core.parser.HttpParser;
-import me.stevenkin.http.mineserver.core.task.HttpExchange;
 import me.stevenkin.http.mineserver.core.util.ConfigUtil;
 import me.stevenkin.http.mineserver.core.util.ErrorMessageUtil;
 import org.apache.log4j.Logger;

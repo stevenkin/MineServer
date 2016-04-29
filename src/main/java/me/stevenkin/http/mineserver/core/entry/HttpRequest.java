@@ -1,12 +1,11 @@
 package me.stevenkin.http.mineserver.core.entry;
 
-import me.stevenkin.http.mineserver.core.container.HttpContext;
+import me.stevenkin.http.mineserver.core.container.bean.HttpContext;
 import me.stevenkin.http.mineserver.core.parser.HttpParser;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by wjg on 16-4-15.

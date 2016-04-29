@@ -40,4 +40,28 @@ public class MappingHandle {
         }
         throw new NoFoundException();
     }
+
+    public static class ClassPair<T extends HttpHandle>{
+        private Class<T> clazz;
+        private T instance;
+
+        public ClassPair(Class<T> clazz) {
+            this.clazz = clazz;
+        }
+
+        public Class<T> getClazz() {
+            return clazz;
+        }
+
+        public void setClazz(Class<T> clazz) {
+            this.clazz = clazz;
+        }
+
+        public T getInstance() throws Exception {
+            if(this.instance==null){
+                this.instance = this.clazz.newInstance();
+            }
+            return this.instance;
+        }
+    }
 }

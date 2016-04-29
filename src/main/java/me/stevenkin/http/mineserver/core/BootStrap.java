@@ -1,5 +1,7 @@
 package me.stevenkin.http.mineserver.core;
 
+import me.stevenkin.http.mineserver.core.task.MineServer;
+
 /**
  * Created by wjg on 16-4-28.
  */

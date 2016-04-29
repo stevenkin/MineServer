@@ -1,5 +1,6 @@
-package me.stevenkin.http.mineserver.core.container;
+package me.stevenkin.http.mineserver.core.container.bean;
 
+import me.stevenkin.http.mineserver.core.container.HttpSessionManager;
 import me.stevenkin.http.mineserver.core.entry.HttpRequest;
 import me.stevenkin.http.mineserver.core.entry.HttpResponse;
 

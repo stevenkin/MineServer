@@ -1,12 +1,9 @@
 package me.stevenkin.http.mineserver.core.entry;
 
-import me.stevenkin.http.mineserver.core.container.HttpContext;
-import me.stevenkin.http.mineserver.core.util.FileUtil;
+import me.stevenkin.http.mineserver.core.container.bean.HttpContext;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
