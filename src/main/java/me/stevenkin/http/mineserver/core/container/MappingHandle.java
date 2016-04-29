@@ -1,9 +1,16 @@
 package me.stevenkin.http.mineserver.core.container;
 
+import me.stevenkin.http.mineserver.core.annotation.AnnotationParser;
+import me.stevenkin.http.mineserver.core.annotation.Controller;
+import me.stevenkin.http.mineserver.core.container.bean.HttpInitConfig;
+import me.stevenkin.http.mineserver.core.container.bean.MappingInfo;
 import me.stevenkin.http.mineserver.core.entry.HttpRequest;
 import me.stevenkin.http.mineserver.core.exception.NoFoundException;
+import me.stevenkin.http.mineserver.core.parser.HttpParser;
+import me.stevenkin.http.mineserver.core.util.ClassUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,20 +21,33 @@ import java.util.regex.Pattern;
  * Created by wjg on 16-4-26.
  */
 public class MappingHandle {
-    private Map<String,HttpHandle> handleMap = new ConcurrentHashMap<>();
+    private Map<String,HttpHandle> staticHandleMap = new ConcurrentHashMap<>();
+    private Map<MappingInfo,ClassPair<? extends HttpHandle>> handleMap = new ConcurrentHashMap<>();
 
     public MappingHandle(){
         this.init();
     }
 
     public void init(){
-        handleMap.put("^/static/(.+)",new HttpStaticHandle());
+        MappingInfo staticMappingInfo = new MappingInfo(HttpParser.METHOD.GET,"^/static/(.+)",new HashMap<>());
+        HttpInitConfig config1 = new HttpInitConfig();
+        config1.putAllInitParameter(staticMappingInfo.getInitParameter());
+        ClassPair<HttpStaticHandle> staticHandleClassPair = new ClassPair<>(HttpStaticHandle.class,config1);
+        handleMap.put(staticMappingInfo,staticHandleClassPair);
+        List<Class<? extends HttpHandle>> classList = ClassUtil.getClassListByAnnotation("", Controller.class);
+        for(Class<? extends HttpHandle> clazz : classList){
+            MappingInfo info = AnnotationParser.parseAnnotation(clazz);
+            HttpInitConfig config = new HttpInitConfig();
+            config.putAllInitParameter(info.getInitParameter());
+            ClassPair<? extends HttpHandle> classPair = new ClassPair<>(clazz,config);
+            handleMap.put(info,classPair);
+        }
     }
 
-    public HttpHandle getHander(HttpRequest request){
+    public HttpHandle getHander(HttpRequest request) throws Exception {
         String path = request.getPath();
-        for(String regexStr:this.handleMap.keySet()){
-            Pattern p = Pattern.compile(regexStr);
+        for(MappingInfo info : this.handleMap.keySet()){
+            Pattern p = Pattern.compile(info.getUrlPatten());
             Matcher matcher = p.matcher(path);
             if(matcher.matches()) {
                 List<String> matcherStrList = new ArrayList<>();
@@ -35,7 +55,7 @@ public class MappingHandle {
                     matcherStrList.add(matcher.group(i));
                 }
                 request.addAttributes("matcherStrList",matcherStrList);
-                return handleMap.get(regexStr);
+                return handleMap.get(info).getInstance();
             }
         }
         throw new NoFoundException();
@@ -44,9 +64,11 @@ public class MappingHandle {
     public static class ClassPair<T extends HttpHandle>{
         private Class<T> clazz;
         private T instance;
+        private HttpInitConfig config;
 
-        public ClassPair(Class<T> clazz) {
+        public ClassPair(Class<T> clazz,HttpInitConfig config) {
             this.clazz = clazz;
+            this.config = config;
         }
 
         public Class<T> getClazz() {
@@ -60,6 +82,7 @@ public class MappingHandle {
         public T getInstance() throws Exception {
             if(this.instance==null){
                 this.instance = this.clazz.newInstance();
+                this.instance.init(config);
             }
             return this.instance;
         }

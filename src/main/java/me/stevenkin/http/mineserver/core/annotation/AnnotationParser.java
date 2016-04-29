@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by wjg on 16-4-29.
  */
 public class AnnotationParser {
-    public static <T extends HttpHandle> MappingInfo parseAnnotation(Class<T> clazz){
+    public static <T> MappingInfo parseAnnotation(Class<T> clazz){
         if(clazz.isAnnotationPresent(Controller.class)){
             Controller controller = clazz.getAnnotation(Controller.class);
             HttpParser.METHOD method = controller.method();
