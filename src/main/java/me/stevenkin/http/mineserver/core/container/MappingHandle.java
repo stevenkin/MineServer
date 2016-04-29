@@ -32,7 +32,7 @@ public class MappingHandle {
         MappingInfo staticMappingInfo = new MappingInfo(HttpParser.METHOD.GET,"^/static/(.+)",new HashMap<>());
         HttpInitConfig config1 = new HttpInitConfig();
         config1.putAllInitParameter(staticMappingInfo.getInitParameter());
-        ClassPair<? extends HttpStaticHandle> staticHandleClassPair = new ClassPair<>(HttpStaticHandle.class,config1);
+        ClassPair<HttpStaticHandle> staticHandleClassPair = new ClassPair<>(HttpStaticHandle.class,config1);
         handleMap.put(staticMappingInfo,staticHandleClassPair);
         List<Class<? extends HttpHandle>> classList = ClassUtil.getClassListByAnnotation("", Controller.class);
         for(Class<? extends HttpHandle> clazz : classList){
