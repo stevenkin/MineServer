@@ -117,7 +117,7 @@ public class MineServer implements Runnable {
             if(httpParser.parse()){
                 HttpRequest request = httpParser.getRequest();
                 HttpExchange httpExchange = new HttpExchange(request,response,key,this.container,this.selector);
-                service.submit(httpExchange);
+                service.execute(httpExchange);
                 httpParser.clear();
             }
         } catch (Exception e) {

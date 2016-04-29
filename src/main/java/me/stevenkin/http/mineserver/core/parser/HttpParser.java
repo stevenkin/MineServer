@@ -64,10 +64,20 @@ public class HttpParser {
                 System.arraycopy(sourceBytes,0,this.headerBytes,0,index);
                 parseHeaders();
                 if((sourceBytes.length-index-4)>0){
-                    this.bodyBytes = new byte[sourceBytes.length-index-4];
-                    System.arraycopy(sourceBytes,index,this.bodyBytes,0,sourceBytes.length-index);
                     if(isGet)
                         throw new ProtocolSyntaxException("http protocol parse syntax error!");
+                    else{
+                        if((sourceBytes.length-index-4)>=this.request.getContentLength()){
+                            this.bodyBytes = new byte[(int)this.request.getContentLength()];
+                            System.arraycopy(sourceBytes,index+4,this.bodyBytes,0, (int) this.request.getContentLength());
+                            this.request.setBody(this.bodyBytes);
+                            return true;
+                        }else{
+                            this.bodyBytes = new byte[sourceBytes.length-index-4];
+                            System.arraycopy(sourceBytes,index+4,this.bodyBytes,0,sourceBytes.length-index-4);
+                            return false;
+                        }
+                    }
                 }else{
                     if(this.isGet)
                         return true;
@@ -99,6 +109,8 @@ public class HttpParser {
                         this.headerBytes = bytes2;
                     }*/
                         return true;
+                    }else {
+                        this.bodyBytes = byteArray;
                     }
                 }
             }

@@ -49,7 +49,7 @@ public class MappingHandle {
         for(MappingInfo info : this.handleMap.keySet()){
             Pattern p = Pattern.compile(info.getUrlPatten());
             Matcher matcher = p.matcher(path);
-            if(matcher.matches()) {
+            if(matcher.matches()&&info.getMethod()==request.getMethod()) {
                 List<String> matcherStrList = new ArrayList<>();
                 for(int i=1;i<=matcher.groupCount();i++){
                     matcherStrList.add(matcher.group(i));
@@ -79,7 +79,7 @@ public class MappingHandle {
             this.clazz = clazz;
         }
 
-        public T getInstance() throws Exception {
+        public synchronized T getInstance() throws Exception {
             if(this.instance==null){
                 this.instance = this.clazz.newInstance();
                 this.instance.init(config);
