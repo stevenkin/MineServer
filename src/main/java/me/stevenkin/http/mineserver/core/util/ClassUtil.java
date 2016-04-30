@@ -124,7 +124,7 @@ public class ClassUtil {
 
         private static String getClassName(String packageName, String fileName) {
             String className = fileName.substring(0, fileName.lastIndexOf("."));
-            if (Strings.isNullOrEmpty(packageName)) {
+            if (!Strings.isNullOrEmpty(packageName)) {
                 className = packageName + "." + className;
             }
             return className;
@@ -132,7 +132,7 @@ public class ClassUtil {
 
         private static String getSubPackagePath(String packagePath, String filePath) {
             String subPackagePath = filePath;
-            if (Strings.isNullOrEmpty(packagePath)) {
+            if (!Strings.isNullOrEmpty(packagePath)) {
                 subPackagePath = packagePath + "/" + subPackagePath;
             }
             return subPackagePath;
@@ -140,7 +140,7 @@ public class ClassUtil {
 
         private static String getSubPackageName(String packageName, String filePath) {
             String subPackageName = filePath;
-            if (Strings.isNullOrEmpty(packageName)) {
+            if (!Strings.isNullOrEmpty(packageName)) {
                 subPackageName = packageName + "." + subPackageName;
             }
             return subPackageName;

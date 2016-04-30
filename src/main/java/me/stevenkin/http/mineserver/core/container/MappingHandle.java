@@ -46,6 +46,8 @@ public class MappingHandle {
 
     public HttpHandle getHander(HttpRequest request) throws Exception {
         String path = request.getPath();
+        int index = path.indexOf("?");
+        path = path.substring(0,index<0?path.length():index);
         for(MappingInfo info : this.handleMap.keySet()){
             Pattern p = Pattern.compile(info.getUrlPatten());
             Matcher matcher = p.matcher(path);
