@@ -30,6 +30,7 @@
     </dependencies>
 
     <build>
+        <finalName>MineServer-core</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -74,7 +75,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>me.stevenkin.http.mineserver.core.task.MineServer</mainClass>
+                            <mainClass>me.stevenkin.http.mineserver.core.BootStrap</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

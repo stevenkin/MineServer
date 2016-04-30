@@ -66,7 +66,7 @@ public class HttpResponse {
         return output;
     }
 
-    public BufferedWriter getWrite(char[] chars){
+    public BufferedWriter getWrite(){
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(this.getOutput()));
         return writer;
     }
