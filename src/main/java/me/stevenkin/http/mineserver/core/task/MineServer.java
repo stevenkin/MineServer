@@ -6,7 +6,6 @@ import me.stevenkin.http.mineserver.core.entry.HttpResponse;
 import me.stevenkin.http.mineserver.core.parser.HttpParser;
 import me.stevenkin.http.mineserver.core.util.ConfigUtil;
 import me.stevenkin.http.mineserver.core.util.ErrorMessageUtil;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -26,8 +25,6 @@ import java.util.concurrent.Executors;
  * Created by wjg on 16-4-14.
  */
 public class MineServer implements Runnable {
-    private static Logger logger = Logger.getLogger(MineServer.class);
-
     private int port;
     private int coreThreadCount;
     private String serverName;
@@ -51,9 +48,9 @@ public class MineServer implements Runnable {
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
             service = Executors.newFixedThreadPool(this.coreThreadCount);
             container = new HttpContainer();
-            logger.info("server is boot "+serverSocketChannel.toString());
+            System.out.println("server is boot "+serverSocketChannel.toString());
         } catch (IOException e) {
-            logger.error("server boot fail",e);
+            System.err.println(e);
         }
     }
 
@@ -65,7 +62,7 @@ public class MineServer implements Runnable {
                 if(n<=0)
                     continue;
             } catch (IOException e) {
-                logger.error("server select error",e);
+                System.err.println(e);
                 continue;
             }
             Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();

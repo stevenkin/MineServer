@@ -1,6 +1,5 @@
 package me.stevenkin.http.mineserver.core.util;
 
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,8 +10,7 @@ import java.util.Properties;
 /**
  * Created by wjg on 16-4-28.
  */
-public class ConfigUtil {
-    private static final Logger logger = Logger.getLogger(ConfigUtil.class);
+public class ConfigUtil{
     private static Properties properties = new Properties();
 
     public static void loadConfig(){
@@ -21,7 +19,7 @@ public class ConfigUtil {
         try {
             properties.load(inputStream);
         } catch (IOException e) {
-            logger.error("load config fail!!!",e);
+            System.err.println(e);
         }
     }
 

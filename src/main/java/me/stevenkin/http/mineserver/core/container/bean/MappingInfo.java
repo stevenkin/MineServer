@@ -65,4 +65,13 @@ public class MappingInfo {
         result = 31 * result + urlPatten.hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "MappingInfo{" +
+                "method=" + method +
+                ", urlPatten='" + urlPatten + '\'' +
+                ", initParameter=" + initParameter +
+                '}';
+    }
 }

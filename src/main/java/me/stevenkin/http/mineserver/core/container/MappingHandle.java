@@ -40,6 +40,7 @@ public class MappingHandle {
         }
         for(Class<? extends HttpHandle> clazz : classList){
             MappingInfo info = AnnotationParser.parseAnnotation(clazz);
+            System.out.println(info);
             HttpInitConfig config = new HttpInitConfig();
             config.putAllInitParameter(info.getInitParameter());
             ClassPair<? extends HttpHandle> classPair = new ClassPair<>(clazz,config);
