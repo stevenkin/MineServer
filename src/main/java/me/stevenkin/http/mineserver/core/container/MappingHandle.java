@@ -34,7 +34,10 @@ public class MappingHandle {
         config1.putAllInitParameter(staticMappingInfo.getInitParameter());
         ClassPair<HttpStaticHandle> staticHandleClassPair = new ClassPair<>(HttpStaticHandle.class,config1);
         handleMap.put(staticMappingInfo,staticHandleClassPair);
-        List<Class<? extends HttpHandle>> classList = ClassUtil.getClassListByAnnotation("", Controller.class);
+        List<Class<? extends HttpHandle>> classList = ClassUtil.getClassesByAnnotation(Controller.class);
+        for(Class clazz:classList){
+            System.out.println(clazz);
+        }
         for(Class<? extends HttpHandle> clazz : classList){
             MappingInfo info = AnnotationParser.parseAnnotation(clazz);
             HttpInitConfig config = new HttpInitConfig();
