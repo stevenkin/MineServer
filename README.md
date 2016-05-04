@@ -5,7 +5,7 @@
 * get/post方法
 * 静态文件传输
 * http 参数传递，支持url和请求体两种方式
-* 支持长链接，不支持http pipeline
+* 支持长链接，暂不支持http pipeline
 * 支持部分请求/响应头
 * 支持cookie
 * 支持session
@@ -23,8 +23,8 @@
     <version>1.0-SNAPSHOT</version>
   </dependency>
 ```
-*在新建工程的resources目录添加`server.properties`,在里面写入您的配置,比如：
-```
+* 在新建工程的resources目录添加`server.properties`,在里面写入您的配置,比如：
+```java
 #server的名字，在http响应头中使用
 server = MineServer 
 #端口号
@@ -36,5 +36,33 @@ host = localhost
 #server线程池中的线程数
 coreThreadCount = 10
 ```
+* 在`src`目录新建java文件，写入您的动态http实现类。要实现`HttpHandle`接口，用`Controller`进行注解（这点类似与`servlet 3.0`中的写法）
+```java
+@Controller(method = HttpParser.METHOD.GET,urlPatten = "/get",initParameters = {
+        @InitParameter(key="key1",value="value1"),
+        @InitParameter(key="key2",value="value2")
+})
+public class TestHandle extends AbstractHandle {
+    @Override
+    public void service(HttpRequest httpRequest, HttpResponse httpResponse) throws Exception {
+        Map<String,String> params = httpRequest.getParams();
+        for(Map.Entry<String,String> entry : params.entrySet()){
+            System.out.println(entry.getKey()+":"+entry.getValue());
+        }
+        System.out.println();
+        Iterator<String> iterator = getInitParameterNames();
+        while(iterator.hasNext()){
+            String key = iterator.next();
+            System.out.println(key+":"+getInitParameter(key));
+        }
+        char[] chars = {'h','e','l','l','o',',','w','o','r','l','d'};
+        Writer writer = httpResponse.getWrite();
+        writer.write(chars);
+        writer.flush();
+    }
+}
+```
+* 使用`mvn clean package`打出jar包，比如`MineServer-test-jar-with-dependencies.jar`，然后使用`java -jar MineServer-core-jar-with-dependencies.jar`即可运行。
+以上所有例子在example目录里即可找到。
 
 
