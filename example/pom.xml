@@ -2,33 +2,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>mineserver-core</artifactId>
+        <groupId>me.stevenkin.http</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>me.stevenkin.http</groupId>
-    <artifactId>mineserver-core</artifactId>
-    <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
-    <modules>
-        <module>example</module>
-    </modules>
+    <artifactId>mineserver-test</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>18.0</version>
-        </dependency>
 
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.1</version>
-            <scope>test</scope>
+            <groupId>me.stevenkin.http</groupId>
+            <artifactId>mineserver-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
+
     </dependencies>
 
     <build>
-        <finalName>MineServer-core</finalName>
+        <finalName>MineServer-test</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -90,6 +84,5 @@
 
         </plugins>
     </build>
-
 
 </project>
