@@ -62,7 +62,7 @@ public class TestHandle extends AbstractHandle {
     }
 }
 ```
-* 使用`mvn clean package`打出jar包，比如`MineServer-test-jar-with-dependencies.jar`，然后使用`java -jar MineServer-test-jar-with-dependencies.jar`即可运行。
+* 使用`mvn clean package`打出jar包，比如`MineServer-test-jar-with-dependencies.jar`，然后使用`java -jar MineServer-test-jar-with-dependencies.jar`即可运行。      
 以上所有例子在example目录里即可找到。
 
 
