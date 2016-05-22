@@ -15,7 +15,7 @@
 
 ####如何使用
 * 下载`MineServer-core-jar-with-dependencies.jar`到本地目录，比如`/home/mineserver/test`
-* 使用命令`mvn install:install-file -Dfile=/home/mineserver/testMineServer-core-jar-with-dependencies.jar -DgroupId=me.stevenkin.http -DartifactId=mineserver-core -Dversion=1.0-SNAPSHOT -Dpackaging=jar`将jar包安装到本地仓库
+* 使用命令`mvn install:install-file -Dfile=/home/mineserver/test/MineServer-core-jar-with-dependencies.jar -DgroupId=me.stevenkin.http -DartifactId=mineserver-core -Dversion=1.0-SNAPSHOT -Dpackaging=jar`将jar包安装到本地仓库
 * 新建一个工程，用我提供的pom.xml构建，里面有必要的依赖和插件配置，如下：
 ```xml
   <dependency>
@@ -63,7 +63,7 @@ public class TestHandle extends AbstractHandle {
     }
 }
 ```
-* 使用`mvn clean package`打出jar包，比如`MineServer-test-jar-with-dependencies.jar`，然后使用`java -jar MineServer-core-jar-with-dependencies.jar`即可运行。
+* 使用`mvn clean package`打出jar包，比如`MineServer-test-jar-with-dependencies.jar`，然后使用`java -jar MineServer-test-jar-with-dependencies.jar`即可运行。      
 以上所有例子在example目录里即可找到。
 
 
