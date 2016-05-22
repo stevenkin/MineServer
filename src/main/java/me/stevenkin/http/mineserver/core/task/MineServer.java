@@ -68,6 +68,7 @@ public class MineServer implements Runnable {
             Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
             while(iterator.hasNext()){
                 SelectionKey key = iterator.next();
+                iterator.remove();
                 if(!key.isValid())
                     continue;
                 try {
@@ -89,7 +90,6 @@ public class MineServer implements Runnable {
                         }
                     }
                 }
-                iterator.remove();
             }
         }
     }
