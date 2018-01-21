@@ -8,6 +8,7 @@ import me.stevenkin.http.mineserver.core.entry.HttpRequest;
 import me.stevenkin.http.mineserver.core.exception.NoFoundException;
 import me.stevenkin.http.mineserver.core.parser.HttpParser;
 import me.stevenkin.http.mineserver.core.util.ClassUtil;
+import me.stevenkin.http.mineserver.core.util.ConfigUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import java.util.regex.Pattern;
  * Created by wjg on 16-4-26.
  */
 public class MappingHandle {
+
     private Map<String,HttpHandle> staticHandleMap = new ConcurrentHashMap<>();
     private Map<MappingInfo,ClassPair<? extends HttpHandle>> handleMap = new ConcurrentHashMap<>();
 
@@ -29,15 +31,12 @@ public class MappingHandle {
     }
 
     public void init(){
-        MappingInfo staticMappingInfo = new MappingInfo(HttpParser.METHOD.GET,"^/static/(.+)",new HashMap<>());
+        MappingInfo staticMappingInfo = new MappingInfo(HttpParser.METHOD.GET,"^/"+ ConfigUtil.getConfig("static", "static").replaceAll("//", "")+"/(.*)",new HashMap<>());
         HttpInitConfig config1 = new HttpInitConfig();
         config1.putAllInitParameter(staticMappingInfo.getInitParameter());
         ClassPair<HttpStaticHandle> staticHandleClassPair = new ClassPair<>(HttpStaticHandle.class,config1);
         handleMap.put(staticMappingInfo,staticHandleClassPair);
-        List<Class<? extends HttpHandle>> classList = ClassUtil.getClassesByAnnotation(Controller.class);
-        for(Class clazz:classList){
-            System.out.println(clazz);
-        }
+        /*List<Class<? extends HttpHandle>> classList = ClassUtil.getClassesByAnnotation(Controller.class);
         for(Class<? extends HttpHandle> clazz : classList){
             MappingInfo info = AnnotationParser.parseAnnotation(clazz);
             System.out.println(info);
@@ -45,7 +44,7 @@ public class MappingHandle {
             config.putAllInitParameter(info.getInitParameter());
             ClassPair<? extends HttpHandle> classPair = new ClassPair<>(clazz,config);
             handleMap.put(info,classPair);
-        }
+        }*/
     }
 
     public HttpHandle getHander(HttpRequest request) throws Exception {

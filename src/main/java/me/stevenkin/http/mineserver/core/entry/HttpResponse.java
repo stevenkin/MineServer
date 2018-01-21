@@ -30,36 +30,41 @@ public class HttpResponse {
         return code;
     }
 
-    public void setCode(String code) {
+    public HttpResponse setCode(String code) {
         this.code = code;
+        return this;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public HttpResponse setMessage(String message) {
         this.message = message;
+        return this;
     }
 
     public String getProtocol() {
         return protocol;
     }
 
-    public void setProtocol(String protocol) {
+    public HttpResponse setProtocol(String protocol) {
         this.protocol = protocol;
+        return this;
     }
 
     public List<Header> getHeaders() {
         return headers;
     }
 
-    public void addHeader(String name,String value){
+    public HttpResponse addHeader(String name,String value){
         headers.add(new Header(name,value));
+        return this;
     }
 
-    public void addHeader(Header header){
+    public HttpResponse addHeader(Header header){
         this.headers.add(header);
+        return this;
     }
 
     public ByteArrayOutputStream getOutput() {
@@ -75,9 +80,10 @@ public class HttpResponse {
         return request;
     }
 
-    public void setRequest(HttpRequest request) {
+    public HttpResponse setRequest(HttpRequest request) {
         this.protocol = "HTTP/1.1";
         this.request = request;
+        return this;
     }
 
     public byte[] headersToBytes(){
@@ -90,7 +96,7 @@ public class HttpResponse {
         return stringBuilder.toString().getBytes(Charset.forName("ISO-8859-1"));
     }
 
-    public void addSetCookie(Cookie cookie){
+    public HttpResponse addSetCookie(Cookie cookie){
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(cookie.getName()).append("=")
                 .append(cookie.getValue())
@@ -107,14 +113,25 @@ public class HttpResponse {
         }
         Header header = new Header("Set-Cookie",stringBuilder.toString());
         this.addHeader(header);
+        return this;
     }
 
     public HttpContext getContext() {
         return context;
     }
 
-    public void setContext(HttpContext context) {
+    public HttpResponse setContext(HttpContext context) {
         this.context = context;
+        return this;
+    }
+
+    public static HttpResponse redirect(HttpResponse response, String newUrl){
+        response.setCode("302")
+                .setProtocol("HTTP/1.1")
+                .setMessage("find it")
+                .addHeader(new Header("Location", newUrl));
+        return response;
+
     }
 
     /*private static final DateFormat formater = new SimpleDateFormat(

@@ -28,6 +28,7 @@ public class MineServer implements Runnable {
     private int port;
     private int coreThreadCount;
     private String serverName;
+
     private ServerSocketChannel serverSocketChannel;
     private Selector selector;
     private Map<SocketChannel,HttpParser> requestParserMap = new HashMap<SocketChannel,HttpParser>();
@@ -39,7 +40,7 @@ public class MineServer implements Runnable {
         ConfigUtil.loadConfig();
         this.port = Integer.parseInt(ConfigUtil.getConfig("port","8080"));
         this.coreThreadCount = Integer.parseInt(ConfigUtil.getConfig("coreThreadCount","10"));
-        this.serverName = ConfigUtil.getConfig("server","MineServer");
+        this.serverName = ConfigUtil.getConfig("server","MineHttpServer");
         try {
             serverSocketChannel = ServerSocketChannel.open();
             serverSocketChannel.configureBlocking(false);

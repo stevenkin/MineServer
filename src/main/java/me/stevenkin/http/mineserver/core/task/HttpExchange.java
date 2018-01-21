@@ -85,8 +85,6 @@ public class HttpExchange implements Runnable {
     public void run() {
         try {
             container.doProcess(request,response);
-            response.setCode("200");
-            response.setMessage("OK");
         } catch (Exception e) {
             e.printStackTrace();
             try {
