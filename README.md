@@ -2,7 +2,7 @@
 ===================================
 >一个基于原生的nio实现的httpserver。仅实现*get/post*方法和部分http请求/响应头。
 
-####目前实现的功能
+目前实现的功能
 * get/post方法
 * 静态文件传输
 * http 参数传递，支持url和请求体两种方式
@@ -13,7 +13,7 @@
 * 支持用户实现HttpHandle接口，通过Controller注解产生动态web内容
 
 
-####如何使用
+如何使用
 * 下载`MineServer-core-jar-with-dependencies.jar`到本地目录，比如`/home/mineserver/test`
 * 使用命令`mvn install:install-file -Dfile=/home/mineserver/test/MineServer-core-jar-with-dependencies.jar -DgroupId=me.stevenkin.http -DartifactId=mineserver-core -Dversion=1.0-SNAPSHOT -Dpackaging=jar`将jar包安装到本地仓库
 * 新建一个工程，用我提供的pom.xml构建，里面有必要的依赖和插件配置，如下：
