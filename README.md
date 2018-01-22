@@ -1,6 +1,6 @@
-# MineServer
+ MineServer
 ===================================
->一个基于原生的nio实现的玩具级别的httpserver。仅实现*get/post*方法和部分http请求/响应头。之后将实现一个完整的webserver。
+>一个基于原生的nio实现的httpserver。仅实现*get/post*方法和部分http请求/响应头。
 
 ####目前实现的功能
 * get/post方法
