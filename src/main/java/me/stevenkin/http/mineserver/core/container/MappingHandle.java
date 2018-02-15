@@ -1,5 +1,8 @@
 package me.stevenkin.http.mineserver.core.container;
 
+import me.stevenkin.boomvc.ioc.Ioc;
+import me.stevenkin.boomvc.ioc.annotation.Bean;
+import me.stevenkin.boomvc.ioc.define.BeanDefine;
 import me.stevenkin.http.mineserver.core.annotation.AnnotationParser;
 import me.stevenkin.http.mineserver.core.annotation.Controller;
 import me.stevenkin.http.mineserver.core.container.bean.HttpInitConfig;
@@ -17,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Created by wjg on 16-4-26.
@@ -25,6 +29,7 @@ public class MappingHandle {
 
     private Map<String,HttpHandle> staticHandleMap = new ConcurrentHashMap<>();
     private Map<MappingInfo,ClassPair<? extends HttpHandle>> handleMap = new ConcurrentHashMap<>();
+    private Ioc ioc;
 
     public MappingHandle(){
         this.init();
@@ -36,15 +41,15 @@ public class MappingHandle {
         config1.putAllInitParameter(staticMappingInfo.getInitParameter());
         ClassPair<HttpStaticHandle> staticHandleClassPair = new ClassPair<>(HttpStaticHandle.class,config1);
         handleMap.put(staticMappingInfo,staticHandleClassPair);
-        /*List<Class<? extends HttpHandle>> classList = ClassUtil.getClassesByAnnotation(Controller.class);
-        for(Class<? extends HttpHandle> clazz : classList){
+        List<Class<?>> classList = ioc.getBeanDefines().stream().map(BeanDefine::getClazz).collect(Collectors.toList());
+        for(Class<?> clazz : classList){
             MappingInfo info = AnnotationParser.parseAnnotation(clazz);
             System.out.println(info);
             HttpInitConfig config = new HttpInitConfig();
             config.putAllInitParameter(info.getInitParameter());
-            ClassPair<? extends HttpHandle> classPair = new ClassPair<>(clazz,config);
+            ClassPair<? extends HttpHandle> classPair = new ClassPair<>((Class<? extends HttpHandle>) clazz,config);
             handleMap.put(info,classPair);
-        }*/
+        }
     }
 
     public HttpHandle getHander(HttpRequest request) throws Exception {

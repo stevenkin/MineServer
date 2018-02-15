@@ -1,9 +1,12 @@
-package me.stevenkin.http.mineserver.core.task;
+package me.stevenkin.http.mineserver.core;
 
+import me.stevenkin.boomvc.ioc.Ioc;
+import me.stevenkin.boomvc.ioc.IocFactory;
 import me.stevenkin.http.mineserver.core.container.HttpContainer;
 import me.stevenkin.http.mineserver.core.entry.HttpRequest;
 import me.stevenkin.http.mineserver.core.entry.HttpResponse;
 import me.stevenkin.http.mineserver.core.parser.HttpParser;
+import me.stevenkin.http.mineserver.core.task.HttpExchange;
 import me.stevenkin.http.mineserver.core.util.ConfigUtil;
 import me.stevenkin.http.mineserver.core.util.ErrorMessageUtil;
 
@@ -15,6 +18,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -29,14 +33,25 @@ public class MineServer implements Runnable {
     private int coreThreadCount;
     private String serverName;
 
+    private String[] args;
+
+    private Class<?> startClass;
+
+    private String startPackage;
+
     private ServerSocketChannel serverSocketChannel;
     private Selector selector;
     private Map<SocketChannel,HttpParser> requestParserMap = new HashMap<SocketChannel,HttpParser>();
+    private Ioc ioc;
 
     private ExecutorService service;
     private HttpContainer container;
 
-    public void init(){
+    public void init(Class<?> startClass, String[] args){
+        this.args = args;
+        this.startClass = startClass;
+        this.startPackage = startClass.getPackage().getName();
+        this.ioc = IocFactory.buildIoc(Arrays.asList(args));
         ConfigUtil.loadConfig();
         this.port = Integer.parseInt(ConfigUtil.getConfig("port","8080"));
         this.coreThreadCount = Integer.parseInt(ConfigUtil.getConfig("coreThreadCount","10"));
@@ -151,6 +166,11 @@ public class MineServer implements Runnable {
             key.interestOps(SelectionKey.OP_READ);
             buffer.clear();
         }
+    }
+
+    public static void run(Class<?> startClass, String[] args){
+        MineServer mineServer = new MineServer();
+        mineServer.init(startClass,args);
     }
 
 
