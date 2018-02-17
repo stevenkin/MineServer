@@ -1,5 +1,6 @@
 package me.stevenkin.http.mineserver.core.container;
 
+import me.stevenkin.boomvc.ioc.Ioc;
 import me.stevenkin.http.mineserver.core.container.bean.HttpContext;
 import me.stevenkin.http.mineserver.core.entry.HttpRequest;
 import me.stevenkin.http.mineserver.core.entry.HttpResponse;
@@ -13,8 +14,8 @@ public class HttpContainer {
 
     private HttpSessionManager sessionManager;
 
-    public HttpContainer() {
-        this.mappingHandle = new MappingHandle();
+    public HttpContainer(Ioc ioc) {
+        this.mappingHandle = new MappingHandle(ioc);
         this.sessionManager = new HttpSessionManager();
     }
 

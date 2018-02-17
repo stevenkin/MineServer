@@ -51,7 +51,7 @@ public class MineServer implements Runnable {
         this.args = args;
         this.startClass = startClass;
         this.startPackage = startClass.getPackage().getName();
-        this.ioc = IocFactory.buildIoc(Arrays.asList(args));
+        this.ioc = IocFactory.buildIoc(Arrays.asList(startPackage));
         ConfigUtil.loadConfig();
         this.port = Integer.parseInt(ConfigUtil.getConfig("port","8080"));
         this.coreThreadCount = Integer.parseInt(ConfigUtil.getConfig("coreThreadCount","10"));
@@ -63,7 +63,7 @@ public class MineServer implements Runnable {
             selector = Selector.open();
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
             service = Executors.newFixedThreadPool(this.coreThreadCount);
-            container = new HttpContainer();
+            container = new HttpContainer(this.ioc);
             System.out.println("server is boot "+serverSocketChannel.toString());
         } catch (IOException e) {
             System.err.println(e);
@@ -171,6 +171,7 @@ public class MineServer implements Runnable {
     public static void run(Class<?> startClass, String[] args){
         MineServer mineServer = new MineServer();
         mineServer.init(startClass,args);
+        new Thread((mineServer)).start();
     }
 
 

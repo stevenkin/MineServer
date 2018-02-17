@@ -7,7 +7,7 @@
     <groupId>me.stevenkin.http</groupId>
     <artifactId>mineserver-core</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1</version>
 
     <dependencies>
         <dependency>
@@ -44,7 +44,6 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
-
 
         </plugins>
     </build>

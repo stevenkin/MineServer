@@ -14,7 +14,7 @@ public class ConfigUtil{
     private static Properties properties = new Properties();
 
     public static void loadConfig(){
-        InputStream inputStream = ConfigUtil.class.getClassLoader().getResourceAsStream("server.properties");
+        InputStream inputStream = ConfigUtil.class.getClassLoader().getResourceAsStream("app.properties");
         properties = new Properties();
         try {
             properties.load(inputStream);

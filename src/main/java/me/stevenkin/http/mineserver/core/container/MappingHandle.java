@@ -31,12 +31,13 @@ public class MappingHandle {
     private Map<MappingInfo,ClassPair<? extends HttpHandle>> handleMap = new ConcurrentHashMap<>();
     private Ioc ioc;
 
-    public MappingHandle(){
+    public MappingHandle(Ioc ioc){
+        this.ioc = ioc;
         this.init();
     }
 
     public void init(){
-        MappingInfo staticMappingInfo = new MappingInfo(HttpParser.METHOD.GET,"^/"+ ConfigUtil.getConfig("static", "static").replaceAll("//", "")+"/(.*)",new HashMap<>());
+        MappingInfo staticMappingInfo = new MappingInfo(HttpParser.METHOD.GET,"^/"+ ConfigUtil.getConfig("staticpPrefix", "static").replaceAll("//", "")+"/(.*)",new HashMap<>());
         HttpInitConfig config1 = new HttpInitConfig();
         config1.putAllInitParameter(staticMappingInfo.getInitParameter());
         ClassPair<HttpStaticHandle> staticHandleClassPair = new ClassPair<>(HttpStaticHandle.class,config1);
