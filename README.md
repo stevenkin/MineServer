@@ -14,36 +14,29 @@
 
 
 如何使用
-* 下载`MineServer-core-jar-with-dependencies.jar`到本地目录，比如`/home/mineserver/test`
-* 使用命令`mvn install:install-file -Dfile=/home/mineserver/test/MineServer-core-jar-with-dependencies.jar -DgroupId=me.stevenkin.http -DartifactId=mineserver-core -Dversion=1.0-SNAPSHOT -Dpackaging=jar`将jar包安装到本地仓库
-* 新建一个工程，用我提供的pom.xml构建，里面有必要的依赖和插件配置，如下：
+- 项目用`maven`构建,请确保已安装maven，然后使用下面命令。
 ```xml
-  <dependency>
-    <groupId>me.stevenkin.http</groupId>
-    <artifactId>mineserver-core</artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </dependency>
+1. git clone git@github.com:StevenKin/MineServer.git
+2. git clone git@github.com:StevenKin/Boomvc.git
+3. cd MineServer & mvn clean install
+4. cd Boomvc/boomvc-ioc & mvn clean install
 ```
-* 在新建工程的resources目录添加`server.properties`,在里面写入您的配置,比如：
-```java
-#server的名字，在http响应头中使用
-server = MineServer
-#端口号
-port = 8080
-#server映射的本地目录
-basePath = /home/wjg/server/
-#主机名（这个暂时没什么用）
-host = localhost
-#server线程池中的线程数
-coreThreadCount = 10
+- 加入依赖和配置到pom.xml
+```xml
+<dependency>
+        <groupId>me.stevenkin.http</groupId>
+        <artifactId>mineserver-core</artifactId>
+        <version>0.1</version>
+</dependency>
 ```
-* 在`src`目录新建java文件，写入您的动态http实现类。要实现`HttpHandle`接口，用`Controller`进行注解（这点类似与`servlet 3.0`中的写法）
+- 写一个controller控制器
 ```java
 @Controller(method = HttpParser.METHOD.GET,urlPatten = "/get",initParameters = {
         @InitParameter(key="key1",value="value1"),
         @InitParameter(key="key2",value="value2")
 })
-public class TestHandle extends AbstractHandle {
+public class TestController extends AbstractHandle {
+
     @Override
     public void service(HttpRequest httpRequest, HttpResponse httpResponse) throws Exception {
         Map<String,String> params = httpRequest.getParams();
@@ -63,6 +56,70 @@ public class TestHandle extends AbstractHandle {
     }
 }
 ```
-* 使用`mvn clean package`打出jar包，比如`MineServer-test-jar-with-dependencies.jar`，然后使用`java -jar MineServer-test-jar-with-dependencies.jar`即可运行。
+这个控制器就可以输出helloworld啦...
+- 然后我们要写一个配置文件`app.properties`
+```xml
+server = MineServer
+port = 8080
+showDir = true
+basePath = D:/workspace/
+host = localhost
+coreThreadCount = 10
+```
+配置很简单，我来解释一下配置的意思
+```xml
+server : 服务器名，是服务器监听的端口
+port : 服务器监听的端口
+showDir : 访问静态文件时如果是目录是否显示
+basePath : 静态路径映射的基目录
+host : 主机名
+coreThreadCount : 处理请求的线程池大小
+```
+- 写一个Main类来启动应用
+```java
+public class MineApplication {
 
+    public static void main(String[] args){
+        MineServer.run(MineApplication.class, args);
+    }
 
+}
+```
+- 如何运行？添加下面配置到`pom.xml`里
+```xml
+<build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>me.stevenkin.mineapp.MineApplication</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+```
+使用命令`mvn clean package`打出jar包，然后`Java -jar app.jar`就可以运行了，也可以到MineServer/example里看写好的示例。

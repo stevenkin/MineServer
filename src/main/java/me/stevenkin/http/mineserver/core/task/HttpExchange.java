@@ -20,9 +20,13 @@ import java.util.Locale;
  * Created by wjg on 16-4-23.
  */
 public class HttpExchange implements Runnable {
-    private static final DateFormat formater = new SimpleDateFormat(
-            "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
-
+    private static final ThreadLocal<DateFormat> formater = new ThreadLocal<DateFormat>(){
+        @Override
+        protected DateFormat initialValue(){
+            return new SimpleDateFormat(
+                    "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+        }
+    };
     private HttpRequest request;
     private HttpResponse response;
     private SelectionKey key;
@@ -101,7 +105,7 @@ public class HttpExchange implements Runnable {
             } catch (IOException e1) {
             }
         }
-        response.addHeader("Date",formater.format(new Date()));
+        response.addHeader("Date",formater.get().format(new Date()));
         byte[] bodyBytes = response.getOutput().toByteArray();
         response.addHeader("Content-Length",Integer.toString(bodyBytes.length));
         byte[] headerBytes = response.headersToBytes();
