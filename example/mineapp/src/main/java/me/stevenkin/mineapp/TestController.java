@@ -30,7 +30,7 @@ public class TestController extends AbstractHandle {
             String key = iterator.next();
             System.out.println(key+":"+getInitParameter(key));
         }
-        char[] chars = {'h','e','l','l','o',',','w','o','r','l','d'};
+        char[] chars = {'h','e','l','l','o',',','w','o','r','l','d','!'};
         Writer writer = httpResponse.getWrite();
         writer.write(chars);
         writer.flush();
