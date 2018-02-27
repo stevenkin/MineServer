@@ -1,6 +1,6 @@
  MineServer
 ===================================
->一个基于原生的nio实现的httpserver。仅实现*get/post*方法和部分http请求/响应头。
+>一个基于原生的nio实现的httpserver。
 
 目前实现的功能
 * get/post方法
